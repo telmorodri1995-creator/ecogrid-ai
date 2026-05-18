@@ -3,7 +3,7 @@
 
 > Sistema de Machine Learning para predicción de producción renovable y clasificación del estado de la red eléctrica española.
 
-🚀 **[Ver demo en vivo]([https://ecogrid-ai.streamlit.app](https://ecogrid-ai.streamlit.app/))**
+🚀 **[Ver demo en vivo](https://ecogrid-ai.streamlit.app)**
 
 ---
 
