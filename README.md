@@ -1,50 +1,33 @@
-# 🌱 EcoGrid AI — Dashboard
+# 🌱 EcoGrid AI
+### Gestión Inteligente de Energías Renovables
 
-Dashboard de predicción y clasificación del estado de la red eléctrica española.
-**Proyecto Final de Máster — CEI · Telmo Rodríguez Gastañaga · 2026**
+> Sistema de Machine Learning para predicción de producción renovable y clasificación del estado de la red eléctrica española.
 
-## Ejecución local
+🚀 **[Ver demo en vivo]([https://ecogrid-ai.streamlit.app](https://ecogrid-ai.streamlit.app/))**
 
-```bash
-pip install -r requirements.txt
-streamlit run app.py
-```
+---
 
-## Despliegue en Streamlit Cloud (gratuito)
+## ¿Qué hace EcoGrid AI?
 
-1. Sube esta carpeta a un repositorio GitHub (público o privado).
-2. Ve a [share.streamlit.io](https://share.streamlit.io) e inicia sesión con GitHub.
-3. Haz clic en **"New app"** → selecciona tu repositorio → archivo: `app.py`.
-4. Haz clic en **Deploy**. En ~2 minutos tendrás una URL pública.
+El sistema eléctrico español genera más del 50% de su electricidad con fuentes renovables, pero su naturaleza intermitente obliga a REE a mantener costosas reservas de potencia. EcoGrid AI predice con **24h de antelación** cuánta energía renovable producirá el sistema y en qué estado operativo se encontrará la red.
 
-## Para conectar los modelos reales (opcional)
+## Arquitectura
 
-En Google Colab, después de entrenar, añade esta celda:
+| | Modelo | Tarea | Resultado |
+|---|---|---|---|
+| M1 | XGBoost Regressor | Predice producción renovable (MW) | R²=0.89 · MAE=2.453 GWh |
+| M2 | XGBoost Classifier | Clasifica estado de red (ESTABLE/ALERTA/CRÍTICO) | F1=0.80 · Recall-CRÍTICO=94.5% |
 
-```python
-import joblib
-joblib.dump(modelo_xgb_regressor, 'modelo_regresion.pkl')
-joblib.dump(modelo_xgb_classifier, 'modelo_clasificacion.pkl')
-joblib.dump(scaler, 'scaler.pkl')
-```
+Los modelos están apilados: la predicción de M1 se usa como feature de entrada en M2.
 
-Luego descarga los `.pkl` y colócalos en esta misma carpeta.
-El dashboard detectará automáticamente si existen y cargará los modelos reales.
+## Fuentes de datos
 
-## Estructura del proyecto
+- **ENTSO-E API** — Generación y demanda eléctrica horaria 2022–2026
+- **Open-Meteo** — Meteorología horaria en 8 ubicaciones estratégicas
+- **CAMS Copernicus** — Radiación solar GHI satelital
+- **AEMET OpenData** — Precipitación en embalses
+- **Spain.csv** — Precio eléctrico horario OMIE 2015–2026
 
-```
-ecogrid_dashboard/
-├── app.py              ← Dashboard principal
-├── requirements.txt    ← Dependencias Python
-└── README.md           ← Este archivo
-```
+## Stack tecnológico
 
-## Métricas del sistema (validación enero 2026)
-
-| Modelo | Métrica | Valor |
-|--------|---------|-------|
-| XGBoost Regressor | R² | 0.8925 (test) / 0.7199 (ene-26) |
-| XGBoost Regressor | MAE | 2.453 GWh |
-| XGBoost Classifier | F1-Crítico | 0.804 |
-| XGBoost Classifier | Recall-Crítico | 94.5% |
+`Python` · `XGBoost` · `Random Forest` · `
