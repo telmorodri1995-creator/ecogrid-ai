@@ -124,7 +124,7 @@ with st.sidebar:
     st.markdown(f"<div class='section-label'>Modelos activos</div>", unsafe_allow_html=True)
     st.markdown("""
     <div class='model-badge'><div class='model-name'>XGBoost Regressor</div><div class='model-meta'>R² = 0.89 · MAE = 2.453 GWh</div></div>
-    <div class='model-badge'><div class='model-name'>XGBoost Classifier</div><div class='model-meta'>F1-Global = 0.83 · CRÍTICO = 94.5%</div></div>
+    <div class='model-badge'><div class='model-name'>XGBoost Classifier</div><div class='model-meta'>F1-Global = 0.83 · CRÍTICO = 87.9%</div></div>
     """, unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown(f"""<div style='font-size:0.75rem;color:{C["gray"]};line-height:1.8;'>
@@ -351,15 +351,15 @@ with tab3:
         </div>""", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown(f"<div class='section-label'>Rendimiento por Clase — Validación Enero 2026</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='section-label'>Rendimiento por Clase — Validación Real Enero 2026 (con stacking)</div>", unsafe_allow_html=True)
     st.dataframe(pd.DataFrame({"Estado":["🟢 ESTABLE","🟡 ALERTA","🔴 CRÍTICO","📊 Global"],
-        "Precisión":[0.841,0.643,0.700,0.735],"Recall":[0.718,0.604,0.945,0.728],
-        "F1-Score":[0.774,0.623,0.804,0.725],"Especificidad":[0.932,0.748,0.871,"-"]
+        "Precisión":[0.891,0.586,0.725,0.740],"Recall":[0.599,0.717,0.879,0.707],
+        "F1-Score":[0.717,0.645,0.795,0.708],"Especificidad":[0.921,0.734,0.856,"-"]
     }).set_index("Estado"),use_container_width=True)
 
     st.markdown(f"""<div class='card' style='border-left:3px solid {C["red"]};margin-top:16px;'>
         <div style='font-size:0.78rem;font-weight:700;color:{C["red"]};text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;'>Prioridad operativa</div>
-        <div style='font-size:0.88rem;color:{C["gray"]};line-height:1.6;'>El sistema detecta el <strong style='color:{C["ink"]};'>94.5% de las horas CRÍTICAS reales</strong> (Recall=0.945), minimizando los falsos negativos más peligrosos. Esta es la decisión de diseño más importante del proyecto.</div>
+        <div style='font-size:0.88rem;color:{C["gray"]};line-height:1.6;'>El sistema detecta el <strong style='color:{C["ink"]};'>87.9% de las horas CRÍTICAS reales</strong> (Recall=0.879), minimizando los falsos negativos más peligrosos. Esta es la decisión de diseño más importante del proyecto.</div>
     </div>""", unsafe_allow_html=True)
 
 # ══════════════════════════════════════
@@ -379,7 +379,7 @@ with tab4:
     st.markdown(f"<div class='section-label'>Impacto estimado</div>", unsafe_allow_html=True)
     i1,i2,i3,i4 = st.columns(4)
     for col,(color,num,unit,title,desc) in zip([i1,i2,i3,i4],[
-        (C["green"],  "−15 M€","al año",      "Reducción coste reservas",   "Al anticipar horas CRÍTICAS con 94.5% de recall"),
+        (C["green"],  "−15 M€","al año",      "Reducción coste reservas",   "Al anticipar horas CRÍTICAS con 87.9% de recall"),
         (C["blue"],   "−22%",  "desvíos",     "Reducción de penalizaciones","Predicción con R²=0.89 reduce errores en mercado"),
         (C["orange"], "+8%",   "compra/venta","Optimización de timing",     "Mejor posicionamiento en mercado intradiario"),
         (C["red"],    "−18 kt","CO₂/año",     "Reducción de emisiones",     "Menor arranque de centrales de respaldo fósiles"),
