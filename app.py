@@ -77,7 +77,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ── Paleta de colores ──
 C = {
     "green": "#34C759", "orange": "#FF9F0A", "red": "#FF3B30",
     "blue": "#007AFF",  "ink": "#1D1D1F",    "gray": "#86868B",
@@ -85,7 +84,6 @@ C = {
 }
 BG = "#FFFFFF"
 
-# ── Datos demo ──
 @st.cache_data
 def generar_datos():
     np.random.seed(42)
@@ -107,14 +105,12 @@ def generar_datos():
 
 df = generar_datos()
 
-# ── Sidebar ──
 with st.sidebar:
     st.markdown(f"""
     <div style='padding-bottom:24px;border-bottom:1px solid {C["border"]};margin-bottom:24px;'>
         <div style='font-size:1.5rem;font-weight:700;color:{C["ink"]};letter-spacing:-0.03em;'>🌱 EcoGrid AI</div>
         <div style='font-size:0.8rem;color:{C["gray"]};margin-top:4px;font-weight:500;'>Gestión Inteligente de Energías Renovables</div>
     </div>""", unsafe_allow_html=True)
-
     st.markdown(f"<div class='section-label'>Período</div>", unsafe_allow_html=True)
     semana_sel = st.selectbox("", ["Todas las semanas","Semana 1 (1–7 ene)","Semana 2 (8–14 ene)","Semana 3 (15–21 ene)","Semana 4 (22–28 ene)"], label_visibility="collapsed")
     st.markdown("<br>", unsafe_allow_html=True)
@@ -134,7 +130,6 @@ with st.sidebar:
         Entrenamiento 2022–2025<br>Validación enero 2026
     </div>""", unsafe_allow_html=True)
 
-# ── Filtro ──
 filtro = df.copy()
 rng_map = {"Semana 1 (1–7 ene)":("2026-01-01","2026-01-07"),"Semana 2 (8–14 ene)":("2026-01-08","2026-01-14"),
            "Semana 3 (15–21 ene)":("2026-01-15","2026-01-21"),"Semana 4 (22–28 ene)":("2026-01-22","2026-01-28")}
@@ -142,7 +137,6 @@ if semana_sel in rng_map:
     ini,fin = rng_map[semana_sel]; filtro = filtro[(filtro["fecha"]>=ini)&(filtro["fecha"]<=fin)]
 filtro = filtro[(filtro["hora"]>=hora_rango[0])&(filtro["hora"]<=hora_rango[1])]
 
-# ── Header ──
 st.markdown(f"""
 <div style='margin-bottom:40px;'>
     <div style='font-size:0.72rem;font-weight:700;color:{C["gray"]};text-transform:uppercase;letter-spacing:0.12em;margin-bottom:8px;'>
@@ -158,9 +152,6 @@ st.markdown(f"""
 
 tab1, tab2, tab3, tab4 = st.tabs(["Panel Principal","Predicción Horaria","Explicabilidad SHAP","Impacto de Negocio"])
 
-# ══════════════════════════════════════
-# TAB 1
-# ══════════════════════════════════════
 with tab1:
     st.markdown("<br>", unsafe_allow_html=True)
     total_m   = filtro["total_real_mw"].mean()
@@ -169,12 +160,10 @@ with tab1:
     h_crit    = (filtro["estado_real"]=="critico").sum()
     h_tot     = len(filtro)
     pct_crit  = h_crit/h_tot*100 if h_tot>0 else 0
-
     c_cob  = "green" if cob_m>=55 else "orange" if cob_m>=32 else "red"
     c_prec = "green" if precio_m<60 else "orange" if precio_m<100 else "red"
     c_cr   = "red" if pct_crit>20 else "orange" if pct_crit>10 else "green"
     hex_m  = {"green":C["green"],"orange":C["orange"],"red":C["red"],"blue":C["blue"]}
-
     c1,c2,c3,c4 = st.columns(4)
     for col,(color,val,label,sub) in zip([c1,c2,c3,c4],[
         ("green", f"{total_m/1000:.1f} GW",  "Producción renovable", "Solar · Eólica · Hidráulica"),
@@ -188,10 +177,8 @@ with tab1:
                 <div class='kpi-value' style='color:{hex_m[color]};margin-top:10px;'>{val}</div>
                 <div class='kpi-sub'>{sub}</div>
             </div>""", unsafe_allow_html=True)
-
     st.markdown("<br>", unsafe_allow_html=True)
     col_l, col_r = st.columns([3,1])
-
     with col_l:
         st.markdown(f"<div class='section-label'>Cobertura Renovable</div>", unsafe_allow_html=True)
         fig = go.Figure()
@@ -210,7 +197,6 @@ with tab1:
             yaxis=dict(gridcolor="#F2F2F7",ticksuffix="%",tickfont=dict(color=C["gray"])),
             height=300,margin=dict(l=0,r=0,t=30,b=0),hovermode="x unified")
         st.plotly_chart(fig,use_container_width=True)
-
     with col_r:
         st.markdown(f"<div class='section-label'>Estado de la Red</div>", unsafe_allow_html=True)
         conteo = filtro["estado_real"].value_counts()
@@ -234,7 +220,6 @@ with tab1:
             <div style='display:flex;justify-content:space-between;padding:5px 0;'>
                 <span>🔴 Crítico</span><span style='font-weight:600;color:{C["red"]};'>{pct_c:.0f}%</span></div>
         </div>""", unsafe_allow_html=True)
-
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown(f"<div class='section-label'>Mix de Generación Renovable</div>", unsafe_allow_html=True)
     fig3 = go.Figure()
@@ -249,27 +234,60 @@ with tab1:
         height=240,margin=dict(l=0,r=0,t=30,b=0),bargap=0.1)
     st.plotly_chart(fig3,use_container_width=True)
 
-# ══════════════════════════════════════
-# TAB 2
-# ══════════════════════════════════════
 with tab2:
     st.markdown("<br>", unsafe_allow_html=True)
-    mae  = abs(filtro["total_real_mw"]-filtro["total_pred_mw"]).mean()
-    rmse = np.sqrt(((filtro["total_real_mw"]-filtro["total_pred_mw"])**2).mean())
-    r2   = 1-((filtro["total_real_mw"]-filtro["total_pred_mw"])**2).sum()/((filtro["total_real_mw"]-filtro["total_real_mw"].mean())**2).sum()
-    sesgo= (filtro["total_pred_mw"]-filtro["total_real_mw"]).mean()
-
-    m1,m2,m3,m4 = st.columns(4)
-    with m1: st.metric("R²", f"{r2:.4f}")
-    with m2: st.metric("MAE", f"{mae/1000:.2f} GWh")
-    with m3: st.metric("RMSE", f"{rmse/1000:.2f} GWh")
-    with m4: st.metric("Sesgo", f"{sesgo/1000:+.2f} GWh")
-
+    st.markdown(f"<div class='section-label'>Métricas Reales del Modelo — Validación Enero 2026</div>", unsafe_allow_html=True)
+    col_m1, col_m2 = st.columns(2)
+    with col_m1:
+        st.markdown(f"""<div class='card'>
+            <div class='kpi-label' style='margin-bottom:16px;'>🤖 Modelo 1 — XGBoost Regressor</div>
+            <div style='display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid {C["border"]};'>
+                <span style='color:{C["gray"]};font-size:0.88rem;'>R² conjunto de test (2022-2025)</span>
+                <span style='font-weight:700;color:{C["green"]};'>0.8908</span>
+            </div>
+            <div style='display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid {C["border"]};'>
+                <span style='color:{C["gray"]};font-size:0.88rem;'>R² validación real (enero 2026)</span>
+                <span style='font-weight:700;color:{C["orange"]};'>0.7199</span>
+            </div>
+            <div style='display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid {C["border"]};'>
+                <span style='color:{C["gray"]};font-size:0.88rem;'>MAE</span>
+                <span style='font-weight:700;color:{C["ink"]};'>2.453 GWh</span>
+            </div>
+            <div style='display:flex;justify-content:space-between;padding:10px 0;'>
+                <span style='color:{C["gray"]};font-size:0.88rem;'>RMSE</span>
+                <span style='font-weight:700;color:{C["ink"]};'>3.255 GWh</span>
+            </div>
+        </div>""", unsafe_allow_html=True)
+    with col_m2:
+        st.markdown(f"""<div class='card'>
+            <div class='kpi-label' style='margin-bottom:16px;'>🎯 Modelo 2 — XGBoost Classifier</div>
+            <div style='display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid {C["border"]};'>
+                <span style='color:{C["gray"]};font-size:0.88rem;'>F1-Score global (enero 2026)</span>
+                <span style='font-weight:700;color:{C["orange"]};'>0.708</span>
+            </div>
+            <div style='display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid {C["border"]};'>
+                <span style='color:{C["gray"]};font-size:0.88rem;'>Recall CRÍTICO</span>
+                <span style='font-weight:700;color:{C["green"]};'>87.9%</span>
+            </div>
+            <div style='display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid {C["border"]};'>
+                <span style='color:{C["gray"]};font-size:0.88rem;'>Precisión global</span>
+                <span style='font-weight:700;color:{C["ink"]};'>0.740</span>
+            </div>
+            <div style='display:flex;justify-content:space-between;padding:10px 0;'>
+                <span style='color:{C["gray"]};font-size:0.88rem;'>Arquitectura</span>
+                <span style='font-weight:700;color:{C["ink"]};'>Stacking M1→M2</span>
+            </div>
+        </div>""", unsafe_allow_html=True)
+    st.markdown(f"""<div class='card' style='border-left:3px solid {C["blue"]};margin-top:8px;'>
+        <div style='font-size:0.78rem;font-weight:700;color:{C["blue"]};text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;'>¿Por qué dos R²?</div>
+        <div style='font-size:0.88rem;color:{C["gray"]};line-height:1.6;'>El R²=0.89 se obtiene sobre el conjunto de test del período de entrenamiento (2022-2025). El R²=0.72 corresponde a enero 2026, datos completamente nuevos que el modelo nunca ha visto. Esta diferencia es esperada y demuestra la capacidad real de generalización del sistema.</div>
+    </div>""", unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown(f"<div class='section-label'>Real vs Predicción — XGBoost Regressor · R²=0.89</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='section-label'>Real vs Predicción — XGBoost Regressor · Enero 2026</div>", unsafe_allow_html=True)
     fig4 = go.Figure()
+    mae_demo = abs(filtro["total_real_mw"]-filtro["total_pred_mw"]).mean()
     fig4.add_trace(go.Scatter(x=list(filtro["fecha"])+list(filtro["fecha"])[::-1],
-        y=list((filtro["total_pred_mw"]+mae)/1000)+list((filtro["total_pred_mw"]-mae)/1000)[::-1],
+        y=list((filtro["total_pred_mw"]+mae_demo)/1000)+list((filtro["total_pred_mw"]-mae_demo)/1000)[::-1],
         fill="toself",fillcolor="rgba(0,122,255,0.05)",line=dict(color="rgba(0,0,0,0)"),name="± MAE"))
     fig4.add_trace(go.Scatter(x=filtro["fecha"],y=filtro["total_real_mw"]/1000,name="Real",line=dict(color=C["ink"],width=1.8)))
     fig4.add_trace(go.Scatter(x=filtro["fecha"],y=filtro["total_pred_mw"]/1000,name="Predicción",line=dict(color=C["blue"],width=1.5,dash="dot")))
@@ -280,7 +298,6 @@ with tab2:
         yaxis=dict(gridcolor="#F2F2F7",ticksuffix=" GW",tickfont=dict(color=C["gray"])),
         height=340,margin=dict(l=0,r=0,t=30,b=0),hovermode="x unified")
     st.plotly_chart(fig4,use_container_width=True)
-
     col_a,col_b = st.columns(2)
     with col_a:
         st.markdown(f"<div class='section-label'>Comparativa Semanal — Enero 2026</div>", unsafe_allow_html=True)
@@ -301,19 +318,14 @@ with tab2:
             yaxis=dict(gridcolor="#F2F2F7",title="Predicho (GW)",tickfont=dict(color=C["gray"])),
             height=320,margin=dict(l=0,r=0,t=10,b=0),showlegend=False)
         st.plotly_chart(fig5,use_container_width=True)
-
     st.markdown(f"""<div class='card' style='border-left:3px solid {C["orange"]};'>
         <div style='font-size:0.78rem;font-weight:700;color:{C["orange"]};text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;'>Nota técnica</div>
         <div style='font-size:0.88rem;color:{C["gray"]};line-height:1.6;'>Las semanas 2 y 3 presentan mayor error al coincidir con episodios de alta producción solar que el modelo subestima sistemáticamente. Factores no capturados: temperatura de paneles y capacidad instalada por zona. Semanas 1 y 5 obtienen errores inferiores al 3%.</div>
     </div>""", unsafe_allow_html=True)
 
-# ══════════════════════════════════════
-# TAB 3
-# ══════════════════════════════════════
 with tab3:
     st.markdown("<br>", unsafe_allow_html=True)
     col_r,col_c = st.columns(2)
-
     with col_r:
         st.markdown(f"<div class='section-label'>Modelo 1 — Regresión · Variables más importantes</div>", unsafe_allow_html=True)
         vr = ["albacete_cams_ghi","sevilla_cams_ghi","madrid_cams_ghi","zaragoza_cams_ghi","potencia_eolica_burgos",
@@ -331,7 +343,6 @@ with tab3:
         st.markdown(f"""<div style='font-size:0.84rem;color:{C["gray"]};padding:12px 16px;background:#F5F5F7;border-radius:10px;line-height:1.6;'>
             ☀️ <strong style='color:{C["ink"]};'>Hallazgo</strong> — La radiación solar CAMS de Albacete y Sevilla domina las predicciones, coherente con la concentración de parques solares en el sur peninsular.
         </div>""", unsafe_allow_html=True)
-
     with col_c:
         st.markdown(f"<div class='section-label'>Modelo 2 — Clasificación · Variables más importantes</div>", unsafe_allow_html=True)
         vc = ["precio_eur_mwh","cobertura_hidro","demanda_total_mw","albacete_cams_ghi","hora","potencia_eolica_burgos",
@@ -349,22 +360,17 @@ with tab3:
         st.markdown(f"""<div style='font-size:0.84rem;color:{C["gray"]};padding:12px 16px;background:#F5F5F7;border-radius:10px;line-height:1.6;'>
             💶 <strong style='color:{C["ink"]};'>Hallazgo</strong> — El precio eléctrico es la variable más determinante para clasificar el estado de la red. Precio bajo → alta penetración renovable → estado ESTABLE.
         </div>""", unsafe_allow_html=True)
-
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown(f"<div class='section-label'>Rendimiento por Clase — Validación Real Enero 2026 (con stacking)</div>", unsafe_allow_html=True)
     st.dataframe(pd.DataFrame({"Estado":["🟢 ESTABLE","🟡 ALERTA","🔴 CRÍTICO","📊 Global"],
         "Precisión":[0.891,0.586,0.725,0.740],"Recall":[0.599,0.717,0.879,0.707],
         "F1-Score":[0.717,0.645,0.795,0.708],"Especificidad":[0.921,0.734,0.856,"-"]
     }).set_index("Estado"),use_container_width=True)
-
     st.markdown(f"""<div class='card' style='border-left:3px solid {C["red"]};margin-top:16px;'>
         <div style='font-size:0.78rem;font-weight:700;color:{C["red"]};text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;'>Prioridad operativa</div>
         <div style='font-size:0.88rem;color:{C["gray"]};line-height:1.6;'>El sistema detecta el <strong style='color:{C["ink"]};'>87.9% de las horas CRÍTICAS reales</strong> (Recall=0.879), minimizando los falsos negativos más peligrosos. Esta es la decisión de diseño más importante del proyecto.</div>
     </div>""", unsafe_allow_html=True)
 
-# ══════════════════════════════════════
-# TAB 4
-# ══════════════════════════════════════
 with tab4:
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown(f"""<div style='max-width:680px;margin-bottom:48px;'>
@@ -375,7 +381,6 @@ with tab4:
             El sistema eléctrico español genera más del <strong style='color:{C["ink"]};'>50% de su electricidad con fuentes renovables</strong>, pero su naturaleza intermitente obliga a REE a mantener costosas reservas de potencia.
             EcoGrid AI predice con <strong style='color:{C["ink"]};'>24h de antelación</strong> qué ocurrirá, para que las decisiones lleguen antes que los problemas.</p>
     </div>""", unsafe_allow_html=True)
-
     st.markdown(f"<div class='section-label'>Impacto estimado</div>", unsafe_allow_html=True)
     i1,i2,i3,i4 = st.columns(4)
     for col,(color,num,unit,title,desc) in zip([i1,i2,i3,i4],[
@@ -391,10 +396,8 @@ with tab4:
                 <div class='impact-title'>{title}</div>
                 <div class='impact-desc'>{desc}</div>
             </div>""", unsafe_allow_html=True)
-
     st.markdown("<br><br>", unsafe_allow_html=True)
     col_g,col_a2 = st.columns(2)
-
     with col_g:
         st.markdown(f"<div class='section-label'>Diccionario de Variables</div>", unsafe_allow_html=True)
         for var,defn in {
@@ -410,7 +413,6 @@ with tab4:
                 <div class='glos-key'>{var}</div>
                 <div class='glos-val'>{defn}</div>
             </div>""", unsafe_allow_html=True)
-
     with col_a2:
         st.markdown(f"<div class='section-label'>Arquitectura del Sistema</div>", unsafe_allow_html=True)
         for i,(color,title,desc) in enumerate([
@@ -425,7 +427,6 @@ with tab4:
                 <div style='font-size:0.78rem;color:{C["gray"]};margin-top:3px;'>{desc}</div>
             </div>{'<div style="text-align:center;color:#C7C7CC;font-size:0.9rem;margin:2px 0;">↓</div>' if i<4 else ''}
             """, unsafe_allow_html=True)
-
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown(f"<div class='section-label'>Fuentes de datos</div>", unsafe_allow_html=True)
         for f,d in [("ENTSO-E API","129.922 registros · Generación y demanda 2022-2026"),
@@ -438,7 +439,6 @@ with tab4:
                 <span style='font-size:0.78rem;color:{C["gray"]};text-align:right;max-width:55%;'>{d}</span>
             </div>""", unsafe_allow_html=True)
 
-# ── Footer ──
 st.markdown(f"""
 <div style='margin-top:60px;padding-top:24px;border-top:1px solid {C["border"]};display:flex;justify-content:space-between;align-items:center;'>
     <span style='font-size:0.78rem;color:{C["gray"]};'>EcoGrid AI · Telmo Rodríguez Gastañaga · CEI Máster IA · 2026</span>
