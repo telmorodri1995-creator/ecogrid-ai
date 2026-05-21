@@ -7,8 +7,6 @@
 
 🚀 **[Ver demo en vivo →](https://ecogrid-ai.streamlit.app)**
 
-![Dashboard EcoGrid AI](docs/screenshot-dashboard.png)
-
 ---
 
 ## 🎯 El problema
