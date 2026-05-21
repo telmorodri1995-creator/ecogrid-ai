@@ -128,7 +128,7 @@ Decisiones técnicas pendientes documentadas honestamente:
 
 **Telmo Rodríguez Gastañaga**
 Máster en Marketing Digital e Inteligencia Artificial · CEI · Madrid 2026
-[LinkedIn](https://www.linkedin.com/in/telmo-rodriguez) · [GitHub](https://github.com/telmorodri1995-creator)
+[LinkedIn]([https://www.linkedin.com/in/telmo-rodriguez](https://www.linkedin.com/in/telmo-rodriguez-gasta%C3%B1aga/)) · [GitHub](https://github.com/telmorodri1995-creator)
 
 ---
 
