@@ -126,12 +126,6 @@ Decisiones técnicas pendientes documentadas honestamente:
 - **MLOps**: containerización con Docker, pipeline de reentrenamiento mensual
   con MLflow y monitorización de data drift para producción.
 
-## 📚 Recursos del proyecto
-
-- 📄 [Memoria completa (PDF)](./Memoria_EcoGrid_AI.pdf) · 40 páginas
-- 📓 [Notebook de análisis](./EcoGrid_AI.ipynb)
-- 🎬 [Demo dashboard](https://ecogrid-ai.streamlit.app)
-
 ## 👤 Autor
 
 **Telmo Rodríguez Gastañaga**
